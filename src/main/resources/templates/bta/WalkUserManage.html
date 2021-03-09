@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head th:include="layout :: htmlhead" th:with="title='用户管理'">
+    <style>
+        .tb-img-circle {
+            width: 80px;
+            height: 30px;
+            cursor: pointer;
+            border: 2px solid #dddddd;
+            margin-right: 10px;
+        }
+
+        .layui-table-cell {
+            height: 39px;
+            line-height: 39px;
+        }
+
+        .passcar-body {
+            height: 550px;
+            overflow-y: auto;
+        }
+
+        .passcar {
+            height: 205px;
+            width: 100%;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        .passcar > img {
+            width: 100%;
+            height: calc(100% - 30px);
+            height: -webkit-calc(100% - 30px);
+            height: -moz-calc(100% - 30px);
+        }
+
+        .passcar > p {
+            line-height: 30px;
+            color: #666666;
+            font-size: 14px;
+            text-align: center;
+            height: 30px;
+            background: #e6e6e6;
+            border: 1px solid #ddd;
+        }
+
+        .realtimedata-list {
+            width: 100%;
+            margin: 20px auto;
+        }
+
+        .realtimedata-list > li {
+            display: flex;
+            display: -webkit-flex;
+            display: -moz-flex;
+            align-items: center;
+            line-height: 40px;
+            font-size: 14px;
+            padding: 0 10px;
+        }
+
+        .realtimedata-list > li > p {
+            width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .realtimedata-list > li > span {
+            width: calc(100% - 110px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .num {
+            line-height: 50px;
+            color: #333;
+        }
+
+        .num > span {
+            font-size: 20px;
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .realtime-table {
+            height: 497px;
+        }
+
+        .realtime-table .title {
+            height: 40px;
+            line-height: 40px;
+            color: #fff;
+            font-size: 16px;
+            display: flex;
+            display: -webkit-flex;
+            display: -moz-flex;
+            align-items: center;
+        }
+
+        .realtime-table .title > span {
+            display: inline-block;
+            width: 33%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 1%;
+            text-align: center;
+        }
+
+        .realtime-table .title > span:last-child {
+            width: 150px;
+            margin: 0 auto;
+        }
+
+        .realtime-table .list {
+            height: calc(100% - 40px);
+            height: -webkit-calc(100% - 40px);
+            height: -moz-calc(100% - 40px);
+            overflow-y: auto;
+
+        }
+
+        .realtime-table .list > li {
+            height: 100px;
+            line-height: 100px;
+            border-bottom: 1px solid rgba(116, 177, 254, 0.6);
+            display: flex;
+            display: -webkit-flex;
+            display: -moz-flex;
+            align-items: center;
+            font-size: 14px;
+            padding: 10px 0;
+        }
+
+        .realtime-table .list > li > span {
+            display: inline-block;
+            width: 33%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 1%;
+            text-align: center;
+        }
+
+        .car-img {
+            width: 150px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        .car-img > img {
+            width: 100%;
+            height: 100%;
+        }
+
+        #popupPlateNumber {
+            font-size: 30px;
+            color: #fff;
+            width: 200px;
+            text-align: center;
+        }
+
+        .materiel-info {
+            display: inline-block !important;
+            width: 96%;
+            box-shadow: 0 0 10px #ddd;
+            margin-top: 10px;
+        }
+
+        .materiel-info .materiel-info-title {
+            height: 50px;
+            line-height: 50px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .materiel-info .materiel-info-list > li {
+            display: flex;
+            display: -webkit-flex;
+            display: -moz-flex;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .materiel-info .materiel-info-list > li > span {
+            width: 30%;
+            display: inline-block;
+            padding: 0 1%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .viewer-fixed {
+            z-index: 999999999 !important;
+        }
+    </style>
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body" style="margin: 1%">
+        <div class="layui-fluid">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <!-- 表格工具栏 -->
+                    <form class="layui-form toolbar" lay-filter="historydataTbSearchForm" id="historydataTbSearchForm">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">手机号:</label>
+                                <div class="layui-input-inline">
+                                    <input id="phone" name="phone" class="layui-input" placeholder=""/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">姓名:</label>
+                                <div class="layui-input-inline">
+                                    <input id="trueName" name="trueName" class="layui-input" placeholder=""/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">注册时间:</label>
+                                <div class="layui-input-inline layui-input-date">
+                                    <input id="historyDataDateSel" name="historyDataDateSel"
+                                            class="layui-input icon-date" placeholder="选择日期范围"
+                                           autocomplete="off"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">审核状态:</label>
+                                <div class="layui-input-block">
+                                    <select id="AuditStatus" name="AuditStatus" >
+                                        <option value="0">未审核</option>
+                                        <option value="1">审核通过</option>
+                                        <option value="2">不合格</option>
+                                        <option value="3">未实名</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">&emsp;
+                                <button class="layui-btn icon-btn" lay-filter="passRecordTbSearch" type="button"
+                                        lay-submit>
+                                    <i class="layui-icon">&#xe615;</i>搜索
+                                </button>
+                                <button class="layui-btn layui-btn-primary" id="passRecordSearchEmpty" type="button"
+                                >清空
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 数据表格 -->
+                    <table id="historydataTable" lay-filter="historydataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--添加或编辑用户-->
+    <div id="setUser" class="layer_self_wrap" style="width:520px;display:none;">
+        <form id="userForm" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <input id="userId" type="hidden" name="user_id"/>
+            <div class="layui-form-item">
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-inline">
+                    <input id="mobile" name="phone" lay-verify="required" autocomplete="off" class="layui-input" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">审核状态:</label>
+                <div class="layui-input-inline">
+                    <select id="UserStatus" name="auditStatus" >
+                        <option value="0">未审核</option>
+                        <option value="1">审核通过</option>
+                        <option value="2">不合格</option>
+                        <option value="3">未实名</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名:</label>
+                <div class="layui-input-inline">
+                    <input id="userName" name="trueName" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注:</label>
+                <div class="layui-input-inline">
+                    <input id="remarks" name="remarks" autocomplete="off" class="layui-input" type="password" placeholder="备注不合格原因" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block" style="margin-left: 10px;">
+                    <button class="layui-btn"   lay-filter="userSubmit" lay-submit>提交</button>
+<!--                    <button class="layui-btn layui-btn-primary" ew-event="closeDialog">重置</button>-->
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/dateUtils.js"></script>
+    <script src="/js/walkUserList.js"></script>
+</div>
+</body>
+<!--<script type="text/html" id="InfoBox">-->
+<!--    <form id="InfoEditForm" lay-filter="InfoEditForm" class="layui-form model-form"-->
+<!--          style="height:510px;overflow-y: auto">-->
+<!--        <input id="userId" name="userId" type="hidden"/>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label layui-form-required">手机号:</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input id="phonePopup" name="phone" lay-verify="required" type="text" lay-verType="tips" class="layui-input"/>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label layui-form-required">姓名:</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <input id="trueNamePopup" name="trueName" lay-verify="required" type="text" lay-verType="tips" class="layui-input"/>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label layui-form-required">审核:</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <select lay-verify="required" id="Status" name="auditStatus" >-->
+<!--                    <option value="0">未审核</option>-->
+<!--                    <option value="1">审核通过</option>-->
+<!--                    <option value="2">不合格</option>-->
+<!--                    <option value="3">未实名</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label width-auto">备注:</label>-->
+<!--            <div class="layui-input-block" style="margin-left:80px">-->
+<!--                <textarea id="remarks" name="remarks" class="layui-input" style="height:150px;overflow-y:auto"></textarea>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="model-form-footer">-->
+<!--            <button  class="layui-btn" type="button" lay-filter="commitUpate" lay-submit>提交</button>-->
+<!--            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>-->
+<!--        </div>-->
+<!--    </form>-->
+<!--</script>-->
+
+<script type="text/html" id="InfoBox">
+
+</script>
+</html>
